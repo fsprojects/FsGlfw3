@@ -75,20 +75,20 @@ let main argv =
         //GLES2.glClear ((GLenum.GL_COLOR_BUFFER_BIT ||| GLenum.GL_DEPTH_BUFFER_BIT) |> uint32)
         Glfw3.swapBuffers win
 
-    Glfw3.setWindowRefreshCallback(win, windowRefresh)
-    Glfw3.setWindowSizeCallback (win, fun (win, w, h) -> printfn "w: %d, h: %d" w h)
-    Glfw3.setWindowPosCallback  (win, fun (win, x, y) -> printfn "x: %d, y: %d" x y)
-    Glfw3.setWindowFocusCallback(win, fun (win, b) -> if b then printfn "focused" else printfn "unfocused")
-    Glfw3.setWindowIconifyCallback (win, fun (win, b) -> if b then printfn "iconified" else printfn "uniconified")
-    Glfw3.setFramebufferSizeCallback (win, fun (win, w, h) -> printfn "FB: w: %d, h: %d" w h)
-    Glfw3.setKeyCallback(win, fun (w, k, i, a, m) -> printfn "%A - %d - %A - %A" k i a m; printfn "Key State: %A" (Glfw3.getKey (w, k)))
-    Glfw3.setCharCallback(win, fun (w, c) -> printfn "%c" c)
-    Glfw3.setCharModsCallback(win, fun (w, c, m) -> printfn "%c - %A" c m)
-    Glfw3.setMouseButtonCallback(win, fun (w, b, a, m) -> printfn "mouse %A, %A, %A" b a m; printfn "clipboard: %s" (Glfw3.getClipboardString w))
-//    Glfw3.setCursorPosCallback(win, fun (w, x, y) -> printfn "pos: %f, %f" x y)
-    Glfw3.setCursorEnterCallback(win, fun (w, b) -> printfn "Enter: %b" b)
-    Glfw3.setScrollCallback(win, fun (w, x, y) -> printfn "Scroll: %f %f" x y)
-    Glfw3.setDropCallback(win, fun (w, s) -> printfn "%A" s)
+    Glfw3.setWindowRefreshCallback(win, windowRefresh)                                                                                              |> ignore
+    Glfw3.setWindowSizeCallback (win, fun (win, w, h) -> printfn "w: %d, h: %d" w h)                                                                |> ignore
+    Glfw3.setWindowPosCallback  (win, fun (win, x, y) -> printfn "x: %d, y: %d" x y)                                                                |> ignore
+    Glfw3.setWindowFocusCallback(win, fun (win, b) -> if b then printfn "focused" else printfn "unfocused")                                         |> ignore
+    Glfw3.setWindowIconifyCallback (win, fun (win, b) -> if b then printfn "iconified" else printfn "uniconified")                                  |> ignore
+    Glfw3.setFramebufferSizeCallback (win, fun (win, w, h) -> printfn "FB: w: %d, h: %d" w h)                                                       |> ignore
+    Glfw3.setKeyCallback(win, fun (w, k, i, a, m) -> printfn "%A - %d - %A - %A" k i a m; printfn "Key State: %A" (Glfw3.getKey (w, k)))            |> ignore
+    Glfw3.setCharCallback(win, fun (w, c) -> printfn "%c" c)                                                                                        |> ignore
+    Glfw3.setCharModsCallback(win, fun (w, c, m) -> printfn "%c - %A" c m)                                                                          |> ignore
+    Glfw3.setMouseButtonCallback(win, fun (w, b, a, m) -> printfn "mouse %A, %A, %A" b a m; printfn "clipboard: %s" (Glfw3.getClipboardString w))   |> ignore
+//    Glfw3.setCursorPosCallback(win, fun (w, x, y) -> printfn "pos: %f, %f" x y)                                                                   |> ignore
+    Glfw3.setCursorEnterCallback(win, fun (w, b) -> printfn "Enter: %b" b)                                                                          |> ignore
+    Glfw3.setScrollCallback(win, fun (w, x, y) -> printfn "Scroll: %f %f" x y)                                                                      |> ignore
+    Glfw3.setDropCallback(win, fun (w, s) -> printfn "%A" s)                                                                                        |> ignore
 
     let rec loop () =
         if Glfw3.windowShouldClose win
