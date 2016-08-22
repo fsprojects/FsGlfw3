@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/FsGlfw3/bin
+/FsGlfw3/obj
+/.vs/FsGlfw3/v14/.suo

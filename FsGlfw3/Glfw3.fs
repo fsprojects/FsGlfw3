@@ -1,6 +1,6 @@
 ﻿(*
-** .Net GLFW3
-** Copyright (C) 2015  Wael El Oraiby
+** F# GLFW binding
+** Copyright (C) 2015-2016 Wael El Oraiby
 ** 
 ** This program is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU Affero General Public License as
@@ -307,8 +307,10 @@ type GammaRamp =
     new(r, g, b) = { Red = r; Green = g; Blue = b }
 
 [<AutoOpen>]
-module private Native =
-    let [<LiteralAttribute>] GLFW_DLL = @"glfw"
+module internal Native =
+#if WIN32
+    let [<LiteralAttribute>] GLFW_DLL = @"lib/glfw3-win32-stdcall"
+#endif
 
     type InputMode =
         | CURSOR                 = 0x00033001
@@ -320,24 +322,24 @@ module private Native =
     type GLFWwindow     = IntPtr
     type GLFWcursor     = IntPtr
 
-    type GLFWglproc             = delegate of unit                          -> unit
-    type GLFWerrorfun           = delegate of int * [<MarshalAs(UnmanagedType.LPStr)>] error: string -> unit
-    type GLFWwindowposfun       = delegate of GLFWwindow * int * int        -> unit
-    type GLFWwindowsizefun      = delegate of GLFWwindow * int * int        -> unit
-    type GLFWwindowclosefun     = delegate of GLFWwindow                    -> unit
-    type GLFWwindowrefreshfun   = delegate of GLFWwindow                    -> unit
-    type GLFWwindowfocusfun     = delegate of GLFWwindow * int              -> unit
-    type GLFWwindowiconifyfun   = delegate of GLFWwindow * int              -> unit
-    type GLFWframebuffersizefun = delegate of GLFWwindow * int * int        -> unit
-    type GLFWmousebuttonfun     = delegate of GLFWwindow * int * int * int  -> unit
-    type GLFWcursorposfun       = delegate of GLFWwindow * double * double  -> unit
-    type GLFWcursorenterfun     = delegate of GLFWwindow * int              -> unit
-    type GLFWscrollfun          = delegate of GLFWwindow * double * double  -> unit
-    type GLFWkeyfun             = delegate of GLFWwindow * int * int * int * int    -> unit
-    type GLFWcharfun            = delegate of GLFWwindow * uint32           -> unit
-    type GLFWcharmodsfun        = delegate of GLFWwindow * uint32 * int     -> unit
-    type GLFWdropfun            = delegate of GLFWwindow * int * IntPtr     -> unit // const char**
-    type GLFWmonitorfun         = delegate of GLFWmonitor * int             -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWglproc             = delegate of unit                          -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWerrorfun           = delegate of int * [<MarshalAs(UnmanagedType.LPStr)>] error: string -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWwindowposfun       = delegate of GLFWwindow * int * int        -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWwindowsizefun      = delegate of GLFWwindow * int * int        -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWwindowclosefun     = delegate of GLFWwindow                    -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWwindowrefreshfun   = delegate of GLFWwindow                    -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWwindowfocusfun     = delegate of GLFWwindow * int              -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWwindowiconifyfun   = delegate of GLFWwindow * int              -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWframebuffersizefun = delegate of GLFWwindow * int * int        -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWmousebuttonfun     = delegate of GLFWwindow * int * int * int  -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWcursorposfun       = delegate of GLFWwindow * double * double  -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWcursorenterfun     = delegate of GLFWwindow * int              -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWscrollfun          = delegate of GLFWwindow * double * double  -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWkeyfun             = delegate of GLFWwindow * int * int * int * int    -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWcharfun            = delegate of GLFWwindow * uint32           -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWcharmodsfun        = delegate of GLFWwindow * uint32 * int     -> unit
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWdropfun            = delegate of GLFWwindow * int * IntPtr     -> unit // const char**
+    [<UnmanagedFunctionPointer(CallingConvention.StdCall)>] type GLFWmonitorfun         = delegate of GLFWmonitor * int             -> unit
 
 
     [<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
@@ -349,233 +351,233 @@ module private Native =
 
         new(r, g, b, s) = { red = r; green = g; blue = b; size = s }
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwInit()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwTerminate()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetVersion([<Out>] int& major, [<Out>] int&  minor, [<Out>] int& rev)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetVersionString()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetMonitors([<Out>]int& count)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWmonitor glfwGetPrimaryMonitor()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetMonitorPos(GLFWmonitor monitor, [<Out>]int& xpos, [<Out>]int& ypos)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetMonitorPhysicalSize(GLFWmonitor monitor, [<Out>]int& widthMM, [<Out>]int& heightMM)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetMonitorName(GLFWmonitor monitor)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetVideoModes(GLFWmonitor monitor, [<Out>] int& count)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetVideoMode(GLFWmonitor monitor)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetGamma(GLFWmonitor monitor, float32 gamma)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetGammaRamp(GLFWmonitor monitor)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
-    extern void glfwSetGammaRamp(GLFWmonitor monitor, [<MarshalAs(UnmanagedType.LPStruct)>] GLFWgammaramp ramp);
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
+    extern void glfwSetGammaRamp(GLFWmonitor monitor, [<Out;In>] GLFWgammaramp& ramp);
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwDefaultWindowHints()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwWindowHint(int target, int hint)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindow glfwCreateWindow(int width, int height, [<MarshalAs(UnmanagedType.LPStr)>]string title, GLFWmonitor monitor, GLFWwindow share);
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwDestroyWindow(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwWindowShouldClose(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetWindowShouldClose(GLFWwindow window, int value)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetWindowTitle(GLFWwindow window, [<MarshalAs(UnmanagedType.LPStr)>]string title)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetWindowPos(GLFWwindow window, [<Out>] int& xpos, [<Out>] int& ypos)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetWindowPos(GLFWwindow window, int xpos, int ypos)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetWindowSize(GLFWwindow window, [<Out>] int& width, [<Out>] int& height)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetWindowSize(GLFWwindow window, int width, int height)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetFramebufferSize(GLFWwindow window, [<Out>] int& width, [<Out>] int& height)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetWindowFrameSize(GLFWwindow window, [<Out>] int& left, [<Out>] int& top, [<Out>] int& right, [<Out>] int& bottom)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwIconifyWindow(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwRestoreWindow(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwShowWindow(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwHideWindow(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWmonitor glfwGetWindowMonitor(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwGetWindowAttrib(GLFWwindow window, int attrib)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetWindowUserPointer(GLFWwindow window, IntPtr pointer)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetWindowUserPointer(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow window, GLFWwindowposfun cbfun);
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow window, GLFWframebuffersizefun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwPollEvents()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwWaitEvents()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwPostEmptyEvent()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwGetInputMode(GLFWwindow window, int mode)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetInputMode(GLFWwindow window, int mode, int value)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwGetKey(GLFWwindow window, int key)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwGetMouseButton(GLFWwindow window, int button)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwGetCursorPos(GLFWwindow window, [<Out>] double& xpos, [<Out>] double& ypos)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetCursorPos(GLFWwindow window, double xpos, double ypos)
 
 //    extern GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWcursor glfwCreateStandardCursor(int shape)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwDestroyCursor(GLFWcursor cursor)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetCursor(GLFWwindow window, GLFWcursor cursor)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWkeyfun glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWcharfun glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow window, GLFWcharmodsfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow window, GLFWcursorposfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow window, GLFWcursorenterfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWscrollfun glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWdropfun glfwSetDropCallback(GLFWwindow window, GLFWdropfun cbfun)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern int glfwJoystickPresent(int joy)
 
 //    extern const float* glfwGetJoystickAxes(int joy, int* count);
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetJoystickButtons(int joy, [<Out>] int& count)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetJoystickName(int joy)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetClipboardString(GLFWwindow window, [<MarshalAs(UnmanagedType.LPStr)>] string str);
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetClipboardString(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern double glfwGetTime()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSetTime(double time)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwMakeContextCurrent(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern GLFWwindow glfwGetCurrentContext()
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSwapBuffers(GLFWwindow window)
 
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    [<DllImportAttribute(GLFW_DLL, CharSet = CharSet.Ansi)>]
     extern void glfwSwapInterval(int interval)
 
 //    extern int glfwExtensionSupported(const char* extension);
@@ -650,6 +652,7 @@ let getGammaramp (m: Monitor) =
               blueArr  |> Array.map s2i)
 
 let setGammaramp (m: Monitor, gr: GammaRamp) =
+    printfn "Gamma Ramp"
     let red   = gr.Red   |> Array.map uint16
     let blue  = gr.Blue  |> Array.map uint16
     let green = gr.Green |> Array.map uint16
@@ -657,9 +660,9 @@ let setGammaramp (m: Monitor, gr: GammaRamp) =
     let gh = GCHandle.Alloc (green, GCHandleType.Pinned)
     let bh = GCHandle.Alloc (blue , GCHandleType.Pinned)
 
-    let ramp = GLFWgammaramp(rh.AddrOfPinnedObject(), gh.AddrOfPinnedObject(), bh.AddrOfPinnedObject(), red.Length |> uint16)
+    let mutable ramp = GLFWgammaramp(rh.AddrOfPinnedObject(), gh.AddrOfPinnedObject(), bh.AddrOfPinnedObject(), red.Length |> uint16)
 
-    glfwSetGammaRamp(m.Value, ramp)
+    glfwSetGammaRamp(m.Value, &ramp)
 
     bh.Free()
     gh.Free()
@@ -728,6 +731,11 @@ let getWindowMonitor (win: Window) = Monitor(glfwGetWindowMonitor win.Value)
 let pollEvents () = glfwPollEvents ()
 let waitEvents () = glfwWaitEvents ()
 
+type internal DisposableCallback<'A>(cb: 'A) =
+    member internal x.CB    = cb
+    interface IDisposable with
+        member x.Dispose () = ()
+
 let setWindowShouldCloseCallback (win: Window, cb: Window -> bool) =
     let glfwCB (win: GLFWwindow) =
         let shouldClose =
@@ -736,60 +744,87 @@ let setWindowShouldCloseCallback (win: Window, cb: Window -> bool) =
             else 0
         glfwSetWindowShouldClose (win, shouldClose)
 
-    let cb = GLFWwindowclosefun (glfwCB)
-    glfwSetWindowCloseCallback (win.Value, cb) |> ignore
+    let disp = new DisposableCallback<_> (GLFWwindowclosefun (glfwCB))
+    glfwSetWindowCloseCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setWindowRefreshCallback (win: Window, cb: Window -> unit) =
     let glfwCB(win: GLFWwindow) = cb (Window win)
-    glfwSetWindowRefreshCallback(win.Value, GLFWwindowrefreshfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWwindowrefreshfun glfwCB)
+    glfwSetWindowRefreshCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setWindowSizeCallback (win: Window, cb: Window * int * int -> unit) =
     let glfwCB(win: GLFWwindow) width height = cb (Window win, width, height)
-    glfwSetWindowSizeCallback(win.Value, GLFWwindowsizefun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWwindowsizefun glfwCB)
+    glfwSetWindowSizeCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setWindowPosCallback (win: Window, cb: Window * int * int -> unit) =
     let glfwCB(win: GLFWwindow) x y = cb (Window win, x, y)
-    glfwSetWindowPosCallback (win.Value, GLFWwindowposfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWwindowposfun glfwCB)
+    glfwSetWindowPosCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setWindowFocusCallback (win: Window, cb: Window * bool -> unit) =
     let glfwCB (win: GLFWwindow) b = cb (Window win, b <> 0)
-    glfwSetWindowFocusCallback (win.Value, GLFWwindowfocusfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWwindowfocusfun glfwCB)
+    glfwSetWindowFocusCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setWindowIconifyCallback (win: Window, cb: Window * bool -> unit) =
     let glfwCB (win: GLFWwindow) b = cb (Window win, b <> 0)
-    glfwSetWindowIconifyCallback (win.Value, GLFWwindowiconifyfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWwindowiconifyfun glfwCB)
+    glfwSetWindowIconifyCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setFramebufferSizeCallback (win: Window, cb: Window * int * int -> unit) =
     let glfwCB(win: GLFWwindow) width height = cb (Window win, width, height)
-    glfwSetFramebufferSizeCallback (win.Value, GLFWframebuffersizefun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWframebuffersizefun glfwCB)
+    glfwSetFramebufferSizeCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setKeyCallback (win: Window, cb: Window * Key * int * Action * Mod -> unit) =
     let glfwCB(win: GLFWwindow) k s a m = cb (Window win, k |> enum<Key>, s, a |> enum<Action>, m |> enum<Mod>)
-    glfwSetKeyCallback (win.Value, GLFWkeyfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWkeyfun glfwCB)
+    glfwSetKeyCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setCharCallback (win: Window, cb: Window * char -> unit) =
     let glfwCB(win: GLFWwindow) (c: uint32) = cb (Window win, System.Convert.ToChar c)
-    glfwSetCharCallback (win.Value, GLFWcharfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWcharfun glfwCB)
+    glfwSetCharCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setCharModsCallback (win: Window, cb: Window * char * Mod -> unit) =
     let glfwCB(win: GLFWwindow) (c: uint32) m = cb (Window win, System.Convert.ToChar c, m |> enum<Mod>)
-    glfwSetCharModsCallback (win.Value, GLFWcharmodsfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWcharmodsfun glfwCB)
+    glfwSetCharModsCallback (win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setMouseButtonCallback (win: Window, cb: Window * MouseButton * Action * Mod -> unit) =
     let glfwCB (win: GLFWwindow) x y z = cb (Window win, x |> enum<MouseButton>, y |> enum<Action>, z |> enum<Mod>)
-    glfwSetMouseButtonCallback(win.Value, GLFWmousebuttonfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWmousebuttonfun glfwCB)
+    glfwSetMouseButtonCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setCursorPosCallback (win: Window, cb: Window * float * float -> unit) =
     let glfwCB (win: GLFWwindow) x y = cb (Window win, x, y)
-    glfwSetCursorPosCallback(win.Value, GLFWcursorposfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWcursorposfun glfwCB)
+    glfwSetCursorPosCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setCursorEnterCallback (win: Window, cb: Window * bool -> unit) =
     let glfwCB (win: GLFWwindow) b = cb (Window win, b <> 0)
-    glfwSetCursorEnterCallback(win.Value, GLFWcursorenterfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWcursorenterfun glfwCB)
+    glfwSetCursorEnterCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setScrollCallback (win: Window, cb: Window * float * float -> unit) =
     let glfwCB (win: GLFWwindow) x y = cb (Window win, x, y)
-    glfwSetScrollCallback(win.Value, GLFWscrollfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWscrollfun glfwCB)
+    glfwSetScrollCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let setDropCallback (win: Window, cb: Window * string[] -> unit) =
     let glfwCB (win: GLFWwindow) (count: int) (s : IntPtr) =
@@ -802,7 +837,9 @@ let setDropCallback (win: Window, cb: Window * string[] -> unit) =
 
         cb (Window win, strArr)
 
-    glfwSetDropCallback(win.Value, GLFWdropfun glfwCB) |> ignore
+    let disp = new DisposableCallback<_> (GLFWdropfun glfwCB)
+    glfwSetDropCallback(win.Value, disp.CB) |> ignore
+    disp :> IDisposable
 
 let getClipboardString (win: Window) =
     let ptr = glfwGetClipboardString win.Value
