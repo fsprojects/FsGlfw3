@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>FsGlfw</id>
+        <version>3.2.0.1</version>
+        <title>F# Glfw 3.2.0 binding</title>
+        <authors>Wael El Oraiby</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>GLFW 3.2.0 binding for F#</description>
+    </metadata>
+    <files>
+        <file src="build\FsGlfw.targets" target="build\FsGlfw.targets" />
+        <file src="..\lib\native\glfw3.dll" target="lib\native\glfw3.dll" />
+        <file src="..\FsGlfw3\bin\Release\FsGLFW3.dll" target="lib\net452\FsGLFW3.dll" />
+    </files>
+</package>

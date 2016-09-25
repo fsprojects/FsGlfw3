@@ -314,7 +314,7 @@ type GammaRamp =
 [<AutoOpen>]
 module internal Native =
 #if WIN32
-    let [<LiteralAttribute>] GLFW_DLL = @"lib/glfw3"
+    let [<LiteralAttribute>] GLFW_DLL = @"native/glfw3"
 #endif
 
     type InputMode =
