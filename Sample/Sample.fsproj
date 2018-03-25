@@ -5,8 +5,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>3.2.1-alpha</Version>
+    <Authors>Wael El Oraiby</Authors>
+    <Description>F# bindings for GLFW 3.2.1</Description>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
