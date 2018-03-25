@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <PackageId>FsGlfw</PackageId>
     <Version>3.2.1-alpha</Version>
     <Authors>Wael El Oraiby</Authors>
     <Owners>Wael El Oraiby</Owners>
