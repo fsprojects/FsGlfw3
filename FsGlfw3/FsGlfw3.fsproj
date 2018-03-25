@@ -7,7 +7,11 @@
   <PropertyGroup>
     <Version>3.2.1-alpha</Version>
     <Authors>Wael El Oraiby</Authors>
+    <Owners>Wael El Oraiby</Owners>
+    <Title>F# bindings for GLFW 3.2.1</Title>
     <Description>F# bindings for GLFW 3.2.1</Description>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <Copyright>2015-2018 (c) Wael El Oraiby</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
