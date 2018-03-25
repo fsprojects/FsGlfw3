@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <PackageId>FsGlfw</PackageId>
-    <Version>3.2.1-alpha</Version>
+    <Version>3.2.1.0</Version>
     <Authors>Wael El Oraiby</Authors>
     <Owners>Wael El Oraiby</Owners>
     <Title>F# bindings for GLFW 3.2.1</Title>
